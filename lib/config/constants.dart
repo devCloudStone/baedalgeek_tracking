@@ -12,6 +12,7 @@ class AppColors {
 
 class AppFontSize {
   static const double bigTitleFontSize = 16.0;
+  static const double mediumTitleFontSize = 14.0;
 }
 
 class AppTheme {
@@ -23,5 +24,20 @@ class AppTheme {
     centerTitle: true,
     elevation: 0,
     backgroundColor: AppColors.primaryColor,
+  );
+
+  static ElevatedButtonThemeData elevatedButtonTheme = ElevatedButtonThemeData(
+    style: ElevatedButton.styleFrom(
+      textStyle: const TextStyle(
+        fontSize: AppFontSize.mediumTitleFontSize,
+      ),
+      onPrimary: AppColors.whiteColor,
+      primary: AppColors.primaryColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(
+          Radius.circular(5),
+        ),
+      ),
+    ),
   );
 }

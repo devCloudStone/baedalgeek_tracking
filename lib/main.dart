@@ -23,6 +23,7 @@ class BaedalGeekDriver extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         appBarTheme: AppTheme.appBarTheme,
+        elevatedButtonTheme: AppTheme.elevatedButtonTheme,
       ),
       home: const InItScreen(),
     );
