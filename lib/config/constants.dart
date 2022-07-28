@@ -9,3 +9,19 @@ class AppColors {
   static const Color whiteColor = Color(0xffffffff);
   static const Color redColor = Color(0xfff00000);
 }
+
+class AppFontSize {
+  static const double bigTitleFontSize = 16.0;
+}
+
+class AppTheme {
+  static AppBarTheme appBarTheme = const AppBarTheme(
+    titleTextStyle: TextStyle(
+      fontSize: AppFontSize.bigTitleFontSize,
+      fontWeight: FontWeight.bold,
+    ),
+    centerTitle: true,
+    elevation: 0,
+    backgroundColor: AppColors.primaryColor,
+  );
+}

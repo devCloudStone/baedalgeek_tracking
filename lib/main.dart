@@ -22,15 +22,7 @@ class BaedalGeekDriver extends StatelessWidget {
       getPages: AppRoutes.generateRoute,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        appBarTheme: const AppBarTheme(
-          titleTextStyle: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-          centerTitle: true,
-          elevation: 0,
-          backgroundColor: Color(0xff0f1838),
-        ),
+        appBarTheme: AppTheme.appBarTheme,
       ),
       home: const InItScreen(),
     );
