@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class AppColors {
   static const Color primaryColor = Color(0xff0f1838);
   static const Color pointColor = Color(0xfff5cc1f);
+  static const Color inputUnFocusColor = Color(0xfff0f0f0);
   static const Color headFontColor = Color(0xff131313);
   static const Color fontColor = Color(0xff505050);
   static const Color subTextColor = Color(0xffa0a0a0);
@@ -16,7 +17,7 @@ class AppFontSize {
 }
 
 class AppTheme {
-  static AppBarTheme appBarTheme = const AppBarTheme(
+  static const AppBarTheme appBarTheme = AppBarTheme(
     titleTextStyle: TextStyle(
       fontSize: AppFontSize.bigTitleFontSize,
       fontWeight: FontWeight.bold,

@@ -9,4 +9,3 @@ class AppRoutes {
     GetPage(name: '/tracking-location', page: () => const TrackingScreen()),
   ];
 }
-
