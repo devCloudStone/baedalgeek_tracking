@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:baedalgeek_driver/config/app_routes.dart';
 import 'package:baedalgeek_driver/config/constants.dart';
 import 'package:baedalgeek_driver/screen/authentication/init_screen.dart';

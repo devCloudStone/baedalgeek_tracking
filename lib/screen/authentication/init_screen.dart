@@ -10,11 +10,10 @@ class InItScreen extends StatelessWidget {
 
   Widget textFieldWidget() {
     return TextField(
-      textAlign: TextAlign.center,
       textAlignVertical: TextAlignVertical.center,
       autofocus: false,
       controller: _phoneNumberController,
-      maxLength: 11,
+      maxLength: 8,
       keyboardType: TextInputType.number,
       style: const TextStyle(color: AppColors.fontColor),
       cursorColor: AppColors.fontColor,
@@ -44,8 +43,20 @@ class InItScreen extends StatelessWidget {
           fontSize: AppFontSize.mediumTitleFontSize,
           color: AppColors.subTextColor,
         ),
+        prefixText: '010',
       ),
     );
+  }
+
+  bool checkValidPhoneNumber() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    final phoneNumber = _phoneNumberController.value.text;
+    final phoneNumberLength = _phoneNumberController.value.text.length;
+    _phoneNumberController.clear();
+    if (phoneNumberLength == 8) {
+      return true;
+    }
+    return false;
   }
 
   @override
@@ -75,7 +86,9 @@ class InItScreen extends StatelessWidget {
                   height: 60,
                   child: ElevatedButton(
                     onPressed: () {
-                      Get.toNamed('/tracking-location');
+                      if (checkValidPhoneNumber()) {
+                        Get.toNamed('/tracking-location');
+                      }
                     },
                     child: const Text('사용자 등록'),
                   ),
