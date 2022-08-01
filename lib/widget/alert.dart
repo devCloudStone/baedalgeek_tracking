@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 void warnValidDialog(String title, String content) {
   Get.dialog(
+    barrierDismissible: false,
     AlertDialog(
       title: Text(
         title,
