@@ -1,16 +1,24 @@
 import 'package:baedalgeek_driver/config/app_routes.dart';
 import 'package:baedalgeek_driver/config/constants.dart';
 import 'package:baedalgeek_driver/screen/authentication/init_screen.dart';
+import 'package:baedalgeek_driver/screen/tracking/tracking_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(const BaedalGeekDriver());
+import 'global/global.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  sharedPreferences = await SharedPreferences.getInstance();
 
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: AppColors.primaryColor,
   ));
+
+  runApp(const BaedalGeekDriver());
 }
 
 class BaedalGeekDriver extends StatelessWidget {
@@ -19,13 +27,15 @@ class BaedalGeekDriver extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      getPages: AppRoutes.generateRoute,
       debugShowCheckedModeBanner: false,
+      getPages: AppRoutes.generateRoute,
       theme: ThemeData(
         appBarTheme: AppTheme.appBarTheme,
         elevatedButtonTheme: AppTheme.elevatedButtonTheme,
       ),
-      home: InItScreen(),
+      home: sharedPreferences!.getString('phoneNumber') == null
+          ? InItScreen()
+          : const TrackingScreen(),
     );
   }
 }

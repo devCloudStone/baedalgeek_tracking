@@ -1,4 +1,5 @@
 import 'package:baedalgeek_driver/config/constants.dart';
+import 'package:baedalgeek_driver/global/global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -50,13 +51,16 @@ class InItScreen extends StatelessWidget {
 
   bool checkValidPhoneNumber() {
     FocusManager.instance.primaryFocus?.unfocus();
-    final phoneNumber = _phoneNumberController.value.text;
     final phoneNumberLength = _phoneNumberController.value.text.length;
-    _phoneNumberController.clear();
     if (phoneNumberLength == 8) {
       return true;
     }
     return false;
+  }
+
+  void saveUserInfo() {
+    final phoneNumber = '010${_phoneNumberController.value.text}';
+    sharedPreferences!.setString('phoneNumber', phoneNumber);
   }
 
   @override
@@ -87,7 +91,9 @@ class InItScreen extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () {
                       if (checkValidPhoneNumber()) {
-                        Get.toNamed('/tracking-location');
+                        saveUserInfo();
+                        _phoneNumberController.clear();
+                        Get.offAllNamed('/tracking-location');
                       }
                     },
                     child: const Text('사용자 등록'),
