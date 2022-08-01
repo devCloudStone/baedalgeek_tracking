@@ -13,7 +13,8 @@ class TrackingScreen extends StatefulWidget {
 
 class _TrackingScreenState extends State<TrackingScreen> {
   bool checkProceeding = false;
-  String buttonName = '업무 시작';
+  String workButtonName = '업무 시작';
+  final requestSec = 5;
   Timer? timer;
   final phoneNumber = sharedPreferences!.getString('phoneNumber');
 
@@ -25,19 +26,45 @@ class _TrackingScreenState extends State<TrackingScreen> {
     return false;
   }
 
-  void _sendingLocation() {
-    const requestSec = Duration(seconds: 5);
-    timer = Timer.periodic(requestSec, (timer) {
-      print('hi');
+  void _sendingLocationToServer() {
+    if (checkTime()) {
+      _proceedingAPI();
+      print('API 최초 호출');
+      timer = Timer.periodic(Duration(seconds: requestSec), (timer) {
+        if (checkTime()) {
+          print('시간 통과 후 API 재호출 중'); // 메세지 큐 API 작
+        } else {
+          print('시간 통과 실패');
+          _stopSendingLocationToServer();
+        }
+      });
+    }
+  }
+
+  void _proceedingAPI() {
+    checkProceeding = true;
+    _changeButtonName('실행 중');
+  }
+
+  void _stoppingAPI() {
+    print('api 멈춤');
+    checkProceeding = false;
+    _changeButtonName('업무 시작');
+  }
+
+  void _changeButtonName(String buttonName) {
+    setState(() {
+      workButtonName = buttonName;
     });
   }
 
-  void _stopSendingLocation() {
+  void _stopSendingLocationToServer() {
+    _stoppingAPI();
     timer?.cancel();
   }
 
   void removePhoneInfo() {
-    _stopSendingLocation();
+    _stopSendingLocationToServer();
     sharedPreferences!.remove('phoneNumber');
   }
 
@@ -75,21 +102,13 @@ class _TrackingScreenState extends State<TrackingScreen> {
                 height: 300,
                 child: ElevatedButton(
                   onPressed: () {
-                    if (checkTime()) {
-                      checkProceeding = !checkProceeding;
-                      if (checkProceeding) {
-                        buttonName = '지이잉 가동중...';
-                        _sendingLocation();
-                      } else {
-                        buttonName = '업무 시작';
-                        _stopSendingLocation();
-                      }
-                      setState(() {
-                        buttonName;
-                      });
+                    if (checkProceeding) {
+                      _stopSendingLocationToServer();
+                    } else {
+                      _sendingLocationToServer();
                     }
                   },
-                  child: Text(buttonName),
+                  child: Text(workButtonName),
                 ),
               ),
             ],
