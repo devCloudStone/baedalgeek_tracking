@@ -83,7 +83,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
-                    '${phoneNumber!}님',
+                    '${phoneNumber!}',
                     style: const TextStyle(fontSize: 16),
                   ),
                   const SizedBox(width: 20),

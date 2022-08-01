@@ -1,5 +1,6 @@
 import 'package:baedalgeek_driver/config/constants.dart';
 import 'package:baedalgeek_driver/global/global.dart';
+import 'package:baedalgeek_driver/widget/alert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -55,6 +56,7 @@ class InItScreen extends StatelessWidget {
     if (phoneNumberLength == 8) {
       return true;
     }
+    warnValidDialog('', '휴대폰 번호를 확인 바랍니다');
     return false;
   }
 
