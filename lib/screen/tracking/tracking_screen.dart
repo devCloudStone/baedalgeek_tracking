@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:baedalgeek_driver/global/global.dart';
+import 'package:baedalgeek_driver/widget/alert.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:location/location.dart';
 
 class TrackingScreen extends StatefulWidget {
   const TrackingScreen({Key? key}) : super(key: key);
@@ -12,27 +14,58 @@ class TrackingScreen extends StatefulWidget {
 }
 
 class _TrackingScreenState extends State<TrackingScreen> {
+  Location location = Location();
+  bool? _serviceEnabled;
+  PermissionStatus? _permissionGranted;
+  LocationData? _locationData;
+  Timer? timer;
   bool checkProceeding = false;
   String workButtonName = '업무 시작';
+  String? testC;
   final requestSec = 5;
-  Timer? timer;
   final phoneNumber = sharedPreferences!.getString('phoneNumber');
 
   bool checkTime() {
     final now = int.parse(DateFormat('HHmmss').format(DateTime.now()));
-    if ((103000 < now && now < 140000) || (170000 < now && now < 200000)) {
+    if ((103000 < now && now < 160000) || (170000 < now && now < 200000)) {
       return true;
     }
     return false;
   }
 
-  void _sendingLocationToServer() {
+  Future<void> _sendingLocationToServer() async {
     if (checkTime()) {
       _proceedingAPI();
+      _serviceEnabled = await location.serviceEnabled();
+      if (!_serviceEnabled!) {
+        _serviceEnabled = await location.requestService();
+        if (!_serviceEnabled!) {
+          return;
+        }
+      }
+
+      _permissionGranted = await location.hasPermission();
+      if (_permissionGranted == PermissionStatus.denied) {
+        _permissionGranted = await location.requestPermission();
+        if (_permissionGranted != PermissionStatus.granted) {
+          return;
+        }
+      }
+      location.enableBackgroundMode(enable: true);
+      _locationData = await location.getLocation();
+      warnValidDialog('현재 위치',
+          '위도: ${_locationData!.latitude} \n 경도: ${_locationData!.longitude}');
+
       print('API 최초 호출');
-      timer = Timer.periodic(Duration(seconds: requestSec), (timer) {
+      timer = Timer.periodic(Duration(seconds: requestSec), (timer) async {
         if (checkTime()) {
-          print('시간 통과 후 API 재호출 중'); // 메세지 큐 API 작
+          _locationData = await location.getLocation();
+          setState(() {
+            testC = _locationData!.latitude.toString();
+          });
+          warnValidDialog('현재 위치',
+              '위도: ${_locationData!.latitude} \n 경도: ${_locationData!.longitude}');
+          print('시간 통과 후 API 재호출 중'); // 메세지 큐 API 작업
         } else {
           print('시간 통과 실패');
           _stopSendingLocationToServer();
@@ -79,11 +112,12 @@ class _TrackingScreenState extends State<TrackingScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
+              Text(testC.toString()),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
-                    '${phoneNumber!}',
+                    phoneNumber!,
                     style: const TextStyle(fontSize: 16),
                   ),
                   const SizedBox(width: 20),
