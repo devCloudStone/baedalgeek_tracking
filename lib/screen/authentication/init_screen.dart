@@ -4,9 +4,12 @@ import 'package:baedalgeek_driver/widget/alert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:location/location.dart';
 
 class InItScreen extends StatelessWidget {
   InItScreen({Key? key}) : super(key: key);
+
+  Location location = Location();
 
   final _phoneNumberController = TextEditingController();
 
@@ -85,11 +88,11 @@ class InItScreen extends StatelessWidget {
               children: [
                 textFieldWidget(),
                 const SizedBox(
-                  height: 100,
+                  height: 20,
                 ),
                 SizedBox(
                   width: double.infinity,
-                  height: 60,
+                  height: 40,
                   child: ElevatedButton(
                     onPressed: () {
                       if (checkValidPhoneNumber()) {
@@ -98,7 +101,7 @@ class InItScreen extends StatelessWidget {
                         Get.offAllNamed('/tracking-location');
                       }
                     },
-                    child: const Text('사용자 등록'),
+                    child: const Text('드라이버 등록'),
                   ),
                 ),
               ],

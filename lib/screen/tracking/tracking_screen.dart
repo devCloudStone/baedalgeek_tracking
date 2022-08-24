@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:baedalgeek_driver/config/constants.dart';
 import 'package:baedalgeek_driver/global/global.dart';
-import 'package:baedalgeek_driver/widget/alert.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:location/location.dart';
+import 'package:http/http.dart' as http;
 
 class TrackingScreen extends StatefulWidget {
   const TrackingScreen({Key? key}) : super(key: key);
@@ -14,60 +16,59 @@ class TrackingScreen extends StatefulWidget {
 }
 
 class _TrackingScreenState extends State<TrackingScreen> {
+  Map<String, String>? sendData;
+  String? bodyData;
   Location location = Location();
-  bool? _serviceEnabled;
-  PermissionStatus? _permissionGranted;
   LocationData? _locationData;
   Timer? timer;
   bool checkProceeding = false;
-  String workButtonName = '업무 시작';
-  String? testC;
+  String workButtonName = '업무시작';
   final requestSec = 5;
   final phoneNumber = sharedPreferences!.getString('phoneNumber');
 
   bool checkTime() {
     final now = int.parse(DateFormat('HHmmss').format(DateTime.now()));
-    if ((103000 < now && now < 160000) || (170000 < now && now < 200000)) {
+    // if ((103000 < now && now < 180000) || (190000 < now && now < 200000)) {
+    //   return true;
+    // }
+    if (090000 < now && now < 220000) {
       return true;
     }
     return false;
   }
 
-  Future<void> _sendingLocationToServer() async {
+  _makeSendData() async {
+    _locationData = await location.getLocation();
+    sendData = {
+      'latitude': _locationData!.latitude.toString(),
+      'longitude': _locationData!.longitude.toString(),
+      'phone': phoneNumber.toString()
+    };
+    bodyData = json.encode(sendData);
+  }
+
+  _sendTest() async {
+    http.Response res = await http.post(
+      Uri.parse('https://mq.baedalgeek.kr/api/v1/index/driver-tracking'),
+      headers: {
+        "Content-Type": "application/json",
+        "auth":
+            "c6079d737c94ddc0b37a2c3a93bfc7f7e371ef99391d7641d94beba757450f3d3d7d0b9dd171699bdc42d93518c31a97337495bcf7e6ab22a6a5203247ff111a"
+      },
+      body: bodyData,
+    );
+  }
+
+  _sendingLocationToServer() async {
     if (checkTime()) {
       _proceedingAPI();
-      _serviceEnabled = await location.serviceEnabled();
-      if (!_serviceEnabled!) {
-        _serviceEnabled = await location.requestService();
-        if (!_serviceEnabled!) {
-          return;
-        }
-      }
-
-      _permissionGranted = await location.hasPermission();
-      if (_permissionGranted == PermissionStatus.denied) {
-        _permissionGranted = await location.requestPermission();
-        if (_permissionGranted != PermissionStatus.granted) {
-          return;
-        }
-      }
-      location.enableBackgroundMode(enable: true);
-      _locationData = await location.getLocation();
-      warnValidDialog('현재 위치',
-          '위도: ${_locationData!.latitude} \n 경도: ${_locationData!.longitude}');
-
-      print('API 최초 호출');
+      _makeSendData();
+      _sendTest();
       timer = Timer.periodic(Duration(seconds: requestSec), (timer) async {
         if (checkTime()) {
-          _locationData = await location.getLocation();
-          setState(() {
-            testC = _locationData!.latitude.toString();
-          });
-          warnValidDialog('현재 위치',
-              '위도: ${_locationData!.latitude} \n 경도: ${_locationData!.longitude}');
-          print('시간 통과 후 API 재호출 중'); // 메세지 큐 API 작업
+          _makeSendData();
+          _sendTest();
         } else {
-          print('시간 통과 실패');
           _stopSendingLocationToServer();
         }
       });
@@ -76,13 +77,12 @@ class _TrackingScreenState extends State<TrackingScreen> {
 
   void _proceedingAPI() {
     checkProceeding = true;
-    _changeButtonName('실행 중');
+    _changeButtonName('업무중');
   }
 
   void _stoppingAPI() {
-    print('api 멈춤');
     checkProceeding = false;
-    _changeButtonName('업무 시작');
+    _changeButtonName('업무시작');
   }
 
   void _changeButtonName(String buttonName) {
@@ -112,7 +112,6 @@ class _TrackingScreenState extends State<TrackingScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Text(testC.toString()),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -123,18 +122,31 @@ class _TrackingScreenState extends State<TrackingScreen> {
                   const SizedBox(width: 20),
                   TextButton(
                     onPressed: () {
-                      removePhoneInfo();
                       Get.offAllNamed('/');
+                      removePhoneInfo();
                     },
-                    child: const Text('변경 하기'),
+                    child: const Text(
+                      '번호변경',
+                      style: TextStyle(
+                        color: AppColors.fontColor,
+                      ),
+                    ),
                   ),
                 ],
               ),
-              const SizedBox(height: 50),
+              const SizedBox(height: 30),
+              const Divider(color: AppColors.inputUnFocusColor, thickness: 1.0),
+              const SizedBox(height: 30),
               SizedBox(
                 width: double.infinity,
-                height: 300,
+                height: 40,
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    onPrimary: AppColors.whiteColor,
+                    primary: checkProceeding == false
+                        ? AppColors.primaryColor
+                        : AppColors.subTextColor,
+                  ),
                   onPressed: () {
                     if (checkProceeding) {
                       _stopSendingLocationToServer();
@@ -145,6 +157,18 @@ class _TrackingScreenState extends State<TrackingScreen> {
                   child: Text(workButtonName),
                 ),
               ),
+              const SizedBox(height: 10),
+              !checkProceeding
+                  ? const Center(
+                      child: Text(
+                        '업무시작시, 반드시 해당 버튼을 눌러주세요\n(이 때, 위치 액세스는 ‘항상 허용’ 으로 설정)',
+                        style: TextStyle(
+                          color: AppColors.subTextColor,
+                          fontSize: 12,
+                        ),
+                      ),
+                    )
+                  : const SizedBox()
             ],
           ),
         ),

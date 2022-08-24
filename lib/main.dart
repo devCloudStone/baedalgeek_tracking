@@ -1,12 +1,12 @@
 import 'package:baedalgeek_driver/config/app_routes.dart';
 import 'package:baedalgeek_driver/config/constants.dart';
+import 'package:baedalgeek_driver/controller/binding.dart';
 import 'package:baedalgeek_driver/screen/authentication/init_screen.dart';
 import 'package:baedalgeek_driver/screen/tracking/tracking_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'global/global.dart';
 
 void main() async {
@@ -27,6 +27,7 @@ class BaedalGeekDriver extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      initialBinding: Bind(),
       debugShowCheckedModeBanner: false,
       getPages: AppRoutes.generateRoute,
       theme: ThemeData(
