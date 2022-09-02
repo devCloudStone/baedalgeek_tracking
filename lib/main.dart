@@ -2,7 +2,6 @@ import 'package:baedalgeek_driver/config/app_routes.dart';
 import 'package:baedalgeek_driver/config/constants.dart';
 import 'package:baedalgeek_driver/controller/binding.dart';
 import 'package:baedalgeek_driver/screen/authentication/init_screen.dart';
-import 'package:baedalgeek_driver/screen/tracking/tracking_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -34,9 +33,7 @@ class BaedalGeekDriver extends StatelessWidget {
         appBarTheme: AppTheme.appBarTheme,
         elevatedButtonTheme: AppTheme.elevatedButtonTheme,
       ),
-      home: sharedPreferences!.getString('phoneNumber') == null
-          ? InItScreen()
-          : const TrackingScreen(),
+      home: InItScreen(),
     );
   }
 }

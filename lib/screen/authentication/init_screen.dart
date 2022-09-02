@@ -1,15 +1,13 @@
 import 'package:baedalgeek_driver/config/constants.dart';
 import 'package:baedalgeek_driver/global/global.dart';
+import 'package:baedalgeek_driver/screen/tracking/tracking_screen.dart';
 import 'package:baedalgeek_driver/widget/alert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:location/location.dart';
 
 class InItScreen extends StatelessWidget {
   InItScreen({Key? key}) : super(key: key);
-
-  Location location = Location();
 
   final _phoneNumberController = TextEditingController();
 
@@ -70,45 +68,48 @@ class InItScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusManager.instance.primaryFocus?.unfocus();
-      },
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          title: const Text(
-            '배달긱',
-          ),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 32.0, horizontal: 16.0),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                textFieldWidget(),
-                const SizedBox(
-                  height: 20,
+    return !sharedPreferences!.containsKey('phoneNumber')
+        ? GestureDetector(
+            onTap: () {
+              FocusManager.instance.primaryFocus?.unfocus();
+            },
+            child: Scaffold(
+              resizeToAvoidBottomInset: false,
+              appBar: AppBar(
+                title: const Text(
+                  '배달긱',
                 ),
-                SizedBox(
-                  width: double.infinity,
-                  height: 40,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (checkValidPhoneNumber()) {
-                        saveUserInfo();
-                        _phoneNumberController.clear();
-                        Get.offAllNamed('/tracking-location');
-                      }
-                    },
-                    child: const Text('드라이버 등록'),
+              ),
+              body: Padding(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 32.0, horizontal: 16.0),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      textFieldWidget(),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 40,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if (checkValidPhoneNumber()) {
+                              saveUserInfo();
+                              _phoneNumberController.clear();
+                              Get.offAllNamed('/tracking-location');
+                            }
+                          },
+                          child: const Text('드라이버 등록'),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
-    );
+          )
+        : const TrackingScreen();
   }
 }

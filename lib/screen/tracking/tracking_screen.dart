@@ -28,10 +28,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
 
   bool checkTime() {
     final now = int.parse(DateFormat('HHmmss').format(DateTime.now()));
-    // if ((103000 < now && now < 180000) || (190000 < now && now < 200000)) {
-    //   return true;
-    // }
-    if (090000 < now && now < 220000) {
+    if ((105000 < now && now < 134000) || (165000 < now && now < 194000)) {
       return true;
     }
     return false;
@@ -98,7 +95,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
 
   void removePhoneInfo() {
     _stopSendingLocationToServer();
-    sharedPreferences!.remove('phoneNumber');
+    sharedPreferences!.clear();
   }
 
   @override
@@ -122,8 +119,8 @@ class _TrackingScreenState extends State<TrackingScreen> {
                   const SizedBox(width: 20),
                   TextButton(
                     onPressed: () {
-                      Get.offAllNamed('/');
                       removePhoneInfo();
+                      Get.offAllNamed('/');
                     },
                     child: const Text(
                       '번호변경',
